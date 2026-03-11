@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "232730977979",
+    "project_id": "phone-ai-43851",
+    "storage_bucket": "phone-ai-43851.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232730977979:android:d5cb81765e27750abbab9e",
+        "android_client_info": {
+          "package_name": "com.openmic.openmic.phone_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232730977979-rnd5uhgqbghu3daaq1bbufr59nkfsgeh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhkvs6BefATRRRnXNhGvXG3LKIW6_GxzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232730977979-rnd5uhgqbghu3daaq1bbufr59nkfsgeh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "232730977979-h4i2r28e3u550s3l729jsm8fs618s5ns.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.openmic.openmic.phoneAi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
