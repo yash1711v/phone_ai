@@ -31,6 +31,17 @@ class AuthFailure extends Failure {
   const AuthFailure(super.message, {super.code});
 }
 
+/// Login returned 403 PHONE_NOT_VERIFIED; [accountId] to resume OTP flow.
+class PhoneNotVerifiedFailure extends Failure {
+  final int accountId;
+
+  const PhoneNotVerifiedFailure(super.message, {required this.accountId})
+      : super(code: 'PHONE_NOT_VERIFIED');
+
+  @override
+  List<Object?> get props => [...super.props, accountId];
+}
+
 /// Validation failure
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message, {super.code});

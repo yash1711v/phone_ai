@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/signup_page.dart';
 import '../../features/auth/presentation/pages/phone_otp_page.dart';
+import '../../features/auth/presentation/pages/create_account_page.dart';
+import '../../features/auth/presentation/pages/verify_phone_otp_page.dart';
 import '../../features/home/presentation/pages/home.dart';
 
 /// App router configuration
@@ -26,11 +27,11 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/signup',
-        name: 'signup',
+        path: '/create-account',
+        name: 'create-account',
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
-          child: const SignUpPage(),
+          child: const CreateAccountPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: Tween<Offset>(
@@ -42,6 +43,50 @@ class AppRouter {
           },
         ),
       ),
+      GoRoute(
+        path: '/verify-phone-otp',
+        name: 'verify-phone-otp',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final accountId = extra?['accountId'] as int? ?? 0;
+          final idToken = extra?['idToken'] as String? ?? '';
+          final phoneNumber = extra?['phoneNumber'] as String? ?? '';
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: VerifyPhoneOtpPage(
+              accountId: accountId,
+              idToken: idToken,
+              phoneNumber: phoneNumber,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      // GoRoute(
+      //   path: '/signup',
+      //   name: 'signup',
+      //   pageBuilder: (context, state) => CustomTransitionPage(
+      //     key: state.pageKey,
+      //     child: const SignUpPage(),
+      //     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //       return SlideTransition(
+      //         position: Tween<Offset>(
+      //           begin: const Offset(1.0, 0.0),
+      //           end: Offset.zero,
+      //         ).animate(animation),
+      //         child: child,
+      //       ).animate().slideX(duration: 300.ms);
+      //     },
+      //   ),
+      // ),
       GoRoute(
         path: '/phone-otp',
         name: 'phone-otp',

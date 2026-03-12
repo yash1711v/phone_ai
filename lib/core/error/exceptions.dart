@@ -29,6 +29,14 @@ class AuthException extends AppException {
   const AuthException(super.message, {super.code});
 }
 
+/// Thrown when login returns 403 PHONE_NOT_VERIFIED; [accountId] is used to resume OTP flow.
+class PhoneNotVerifiedException extends AuthException {
+  final int accountId;
+
+  const PhoneNotVerifiedException(super.message, {required this.accountId})
+      : super(code: 'PHONE_NOT_VERIFIED');
+}
+
 /// Validation exception
 class ValidationException extends AppException {
   const ValidationException(super.message, {super.code});

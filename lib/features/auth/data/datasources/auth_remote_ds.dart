@@ -1,13 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/api_client.dart';
+import '../models/account_model.dart';
+import '../models/auth_v3_models.dart';
 import '../models/user_model.dart';
 
 /// Remote data source for authentication
 abstract class AuthRemoteDataSource {
+  /// Lookup account by phone number. Returns accountId if found.
+  /// Throws [ServerException] with code NOT_FOUND when account does not exist.
+  Future<int> lookupByPhone(String phoneNumber);
+
+  /// Send OTP to the phone associated with [accountId]. Requires [recaptchaToken].
+  Future<String> sendOtpV3(int accountId, String recaptchaToken);
+
+  /// Verify OTP for [accountId].
+  Future<void> verifyOtpV3(int accountId, String otp);
+
+  /// Create account (v3). Requires Firebase idToken and recaptchaToken.
+  Future<AccountModel> createAccountV3({
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String idToken,
+    required String recaptchaToken,
+    String? inviteToken,
+  });
+
+  /// Login (v3). Returns account with organizations.
+  Future<AccountModel> loginV3(String idToken);
+
   Future<UserModel> signInWithEmail({
     required String email,
     required String password,
@@ -166,6 +192,79 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       throw AuthException(e.toString());
     }
+  }
+
+  @override
+  Future<int> lookupByPhone(String phoneNumber) async {
+    final response = await apiClient.post<LookupByPhoneResponse>(
+      ApiConstants.authV3LookupByPhone,
+      data: {'phoneNumber': phoneNumber},
+      fromJson: (d) => LookupByPhoneResponse.fromJson(d as Map<String, dynamic>),
+    );
+    final data = response.data;
+    if (data == null) throw const ServerException('Invalid lookup response');
+    return data.accountId;
+  }
+
+  @override
+  Future<String> sendOtpV3(int accountId, String recaptchaToken) async {
+    final response = await apiClient.post<SendOtpResponse>(
+      ApiConstants.authV3SendOtp(accountId),
+      data: {'recaptchaToken': recaptchaToken},
+      fromJson: (d) => SendOtpResponse.fromJson(d as Map<String, dynamic>),
+    );
+    final data = response.data;
+    if (data == null) throw const ServerException('Invalid send OTP response');
+    return data.phoneNumber;
+  }
+
+  @override
+  Future<void> verifyOtpV3(int accountId, String otp) async {
+    await apiClient.post(
+      ApiConstants.authV3VerifyOtp(accountId),
+      data: {'otp': otp},
+    );
+  }
+
+  @override
+  Future<AccountModel> createAccountV3({
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String idToken,
+    required String recaptchaToken,
+    String? inviteToken,
+  }) async {
+    final body = {
+      'name': name,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'idToken': idToken,
+      'recaptchaToken': recaptchaToken,
+      if (inviteToken != null) 'inviteToken': inviteToken,
+    };
+    final response = await apiClient.post<AccountModel>(
+      ApiConstants.authV3CreateAccount,
+      data: body,
+      fromJson: (d) => AccountModel.fromJson(d as Map<String, dynamic>),
+    );
+
+    final data = response.data;
+    debugPrint("Create account response: $data");
+    if (data == null) throw const ServerException('Invalid create account response');
+    return data;
+  }
+
+  @override
+  Future<AccountModel> loginV3(String idToken) async {
+    final response = await apiClient.post<AccountModel>(
+      ApiConstants.authV3Login,
+      data: {'idToken': idToken},
+      fromJson: (d) => AccountModel.fromJson(d as Map<String, dynamic>),
+    );
+    final data = response.data;
+    if (data == null) throw const ServerException('Invalid login response');
+    return data;
   }
 
   @override

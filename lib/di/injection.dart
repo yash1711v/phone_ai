@@ -28,6 +28,7 @@ import '../features/auth/domain/usecases/check_email_usecase.dart';
 import '../features/auth/domain/usecases/send_otp_usecase.dart';
 import '../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/auth/presentation/cubit/auth_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -172,5 +173,10 @@ Future<void> configureDependencies() async {
       authRepository: getIt(),
       analyticsService: getIt(),
     ),
+  );
+
+  // Auth cubit (v3 flow: phone → OTP → login)
+  getIt.registerFactory<AuthCubit>(
+    () => AuthCubit(getIt<AuthRepository>()),
   );
 }

@@ -32,6 +32,7 @@ class AppStrings {
   static const String otpInvalid = 'Please enter a valid 6-digit OTP';
 
   // Error Messages
+  static const String recaptchaFailed = 'Security check failed. Please try again.';
   static const String somethingWentWrong = 'Something went wrong';
   static const String networkError = 'Network error. Please check your connection';
   static const String userNotFound = 'User not found';

@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../error/exceptions.dart';
-
 import 'network_info.dart';
+import 'response_handler.dart';
 import '../utils/logger.dart';
 
 /// API response wrapper
@@ -90,7 +91,7 @@ class ApiClient {
         queryParameters: queryParameters,
         options: options,
       );
-
+      debugPrint("response==> $response");
       return _handleResponse<T>(response, fromJson);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -158,7 +159,8 @@ class ApiClient {
     }
   }
 
-  /// Handle response
+  /// Handle response. Supports both wrapped format { success, data, message }
+  /// and raw API body (e.g. v3 auth returns object directly).
   ApiResponse<T> _handleResponse<T>(
     Response response,
     T Function(dynamic)? fromJson,
@@ -166,44 +168,40 @@ class ApiClient {
     if (response.statusCode != null &&
         response.statusCode! >= 200 &&
         response.statusCode! < 300) {
-      if (response.data is Map<String, dynamic>) {
-        return ApiResponse.fromJson(
-          response.data as Map<String, dynamic>,
-          fromJson,
-        );
-      } else {
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        final hasWrapper = data.containsKey('data') || data.containsKey('success');
+        if (hasWrapper && data['data'] != null && fromJson != null) {
+          return ApiResponse<T>(
+            success: data['success'] as bool? ?? true,
+            message: data['message'] as String?,
+            data: fromJson(data['data']),
+            statusCode: response.statusCode,
+          );
+        }
+        if (hasWrapper) {
+          return ApiResponse.fromJson(data, fromJson);
+        }
         return ApiResponse<T>(
           success: true,
-          data: fromJson != null ? fromJson(response.data) : response.data as T?,
+          data: fromJson != null ? fromJson(data) : data as T?,
           statusCode: response.statusCode,
         );
       }
-    } else {
-      throw ServerException(
-        'Unexpected status code: ${response.statusCode}',
+      return ApiResponse<T>(
+        success: true,
+        data: fromJson != null ? fromJson(data) : data as T?,
+        statusCode: response.statusCode,
       );
     }
+    throw ResponseHandler.handleError(
+      statusCode: response.statusCode,
+      responseData: response.data,
+    );
   }
 
-  /// Handle Dio errors
+  /// Handle Dio errors via [ResponseHandler].
   AppException _handleDioError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        return const NetworkException('Connection timeout');
-      case DioExceptionType.badResponse:
-        final statusCode = error.response?.statusCode;
-        final message = error.response?.data?['message'] ??
-            error.response?.data?['error'] ??
-            'Server error';
-        return ServerException(message, code: statusCode.toString());
-      case DioExceptionType.cancel:
-        return const NetworkException('Request cancelled');
-      case DioExceptionType.connectionError:
-        return const NetworkException('No internet connection');
-      default:
-        return NetworkException(error.message ?? 'Network error');
-    }
+    return ResponseHandler.handleDioError(error);
   }
 }
