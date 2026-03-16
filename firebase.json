@@ -1,1 +1,37 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"phone-ai-43851","appId":"1:232730977979:android:d5cb81765e27750abbab9e","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"phone-ai-43851","appId":"1:232730977979:ios:e1dd9cea970a9736bbab9e","uploadDebugSymbols":true,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"phone-ai-43851","configurations":{"android":"1:232730977979:android:d5cb81765e27750abbab9e","ios":"1:232730977979:ios:e1dd9cea970a9736bbab9e"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "openmic-staging-6f504",
+          "appId": "1:540801659623:android:de51f3a3ee8b0529762842",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "openmic-staging-6f504",
+          "appId": "1:540801659623:ios:7dbb3284dd829678762842",
+          "uploadDebugSymbols": true,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      }
+    },
+    "dart": {
+      "lib/firebase_options_dev.dart": {
+        "projectId": "openmic-staging-6f504",
+        "configurations": {
+          "android": "1:540801659623:android:de51f3a3ee8b0529762842",
+          "ios": "1:540801659623:ios:7dbb3284dd829678762842"
+        }
+      },
+      "lib/firebase_options_prod.dart": {
+        "projectId": "om-101",
+        "configurations": {
+          "android": "1:744913677085:android:cfd61ef73bb31355314ff4",
+          "ios": "1:744913677085:ios:6bf158d8cb87a846314ff4"
+        }
+      }
+    }
+  }
+}

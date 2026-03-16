@@ -44,6 +44,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     final phone = "+91"+_phoneController.text.trim();
     try {
       final token = await getRecaptchaToken(
+        context: context,
         action: RecaptchaAction.sendOtp,
       );
       if (!mounted) return;
@@ -310,25 +311,25 @@ class _CompleteSignInSheetState extends State<_CompleteSignInSheet> {
                 onPressed: state is AuthLoading
                     ? null
                     : () async {
-                        final email = _emailController.text.trim();
-                        final password = _passwordController.text;
-                        if (email.isEmpty || password.isEmpty) return;
-                        try {
-                          final credential = await _getFirebaseIdTokenEmail(email, password);
-                          if (credential != null && mounted) {
-                            await _loginWithIdToken(credential);
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(e.toString().replaceFirst('Exception: ', '')),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        }
-                      },
+                  final email = _emailController.text.trim();
+                  final password = _passwordController.text;
+                  if (email.isEmpty || password.isEmpty) return;
+                  try {
+                    final credential = await _getFirebaseIdTokenEmail(email, password);
+                    if (credential != null && mounted) {
+                      await _loginWithIdToken(credential);
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString().replaceFirst('Exception: ', '')),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  }
+                },
                 isLoading: state is AuthLoading,
               );
             },
@@ -363,18 +364,18 @@ class _CompleteSignInSheetState extends State<_CompleteSignInSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () async {
                       try {
-                      final idToken = await _getFirebaseIdTokenApple();
-                      if (idToken != null && mounted) await _loginWithIdToken(idToken);
-                    } catch (e) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(e.toString().replaceFirst('Exception: ', '')),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        final idToken = await _getFirebaseIdTokenApple();
+                        if (idToken != null && mounted) await _loginWithIdToken(idToken);
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString().replaceFirst('Exception: ', '')),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
                       }
-                    }
                     },
                     icon: const Icon(Icons.apple, size: 24),
                     label: const Text(AppStrings.signInWithApple),

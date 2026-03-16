@@ -1,27 +1,28 @@
 import 'dart:ui';
 
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
-
-import 'core/constants/recaptcha_constants.dart';
-import 'core/theme/theme_cubit.dart';
 import 'package:flutter_gcaptcha_v3/recaptca_config.dart';
+
+import 'core/theme/theme_cubit.dart';
+import 'core/constants/recaptcha_constants.dart';
 import 'core/theme/theme_data.dart';
 import 'core/routes/app_router.dart';
 import 'di/injection.dart';
-import 'shared/widgets/recaptcha_webview_dialog.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/cubit/auth_state.dart';
 import 'core/utils/logger.dart';
+import 'Flavors/config/build_flavor.dart';
+import 'Flavors/config/flavor_config.dart';
 import 'shared/services/notification_service.dart';
 
 /// Main app widget
@@ -45,7 +46,7 @@ class App extends StatelessWidget {
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
           return MaterialApp.router(
-            title: 'Openmic',
+            title: FlavorConfig.instance.appName,
             debugShowCheckedModeBanner: false,
             theme: lightTheme,
             darkTheme: darkTheme,
@@ -58,22 +59,13 @@ class App extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             builder: (context, child) {
-              return Stack(
-                children: [
-                  BlocListener<AuthCubit, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthAuthenticated) {
-                        context.goNamed('home');
-                      }
-                    },
-                    child: child ?? const SizedBox.shrink(),
-                  ),
-                  const Positioned(
-                    left: -200,
-                    top: -200,
-                    child: HiddenRecaptchaWebView(),
-                  ),
-                ],
+              return BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthAuthenticated) {
+                    context.goNamed('home');
+                  }
+                },
+                child: child ?? const SizedBox.shrink(),
               );
             },
           );
@@ -83,56 +75,67 @@ class App extends StatelessWidget {
   }
 }
 
-/// Initialize app services
-Future<void> initializeApp() async {
+/// Initialize app services.
+/// [flavor] is required so [FlavorConfig] (and thus [ApiConstants.baseUrl]) is set before [configureDependencies].
+Future<void> initializeApp({required BuildFlavor flavor}) async {
+  debugPrint('[initializeApp] 1. App initialization started');
   LogLevel.info('App initialization started');
 
+  debugPrint('[initializeApp] 1a. Setting up flavor');
+  await FlavorConfig.instance.setupFlavor(flavor: flavor);
+  debugPrint('[initializeApp] 1a. Flavor configured');
+
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('[initializeApp] 2. WidgetsFlutterBinding initialized');
   LogLevel.info('WidgetsFlutterBinding initialized');
 
+  debugPrint('[initializeApp] 3. Setting preferred orientations');
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  debugPrint('[initializeApp] 3. Orientation locked');
   LogLevel.info('Orientation locked');
 
-  LogLevel.info('Initializing Firebase...');
-  await Firebase.initializeApp();
-  LogLevel.info('Firebase initialized');
+  // Firebase is initialized in main.dart / dev.dart / prod.dart with flavor-specific options.
 
+  debugPrint('[initializeApp] 4. Configuring FlutterError and PlatformDispatcher');
   FlutterError.onError = (errorDetails) {
     LogLevel.error('Flutter Error', errorDetails.exception);
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {
-    // Don't report reCAPTCHA WebView JS evaluation errors as fatal (e.g. page not loaded or wrong URL).
-    if (error is PlatformException &&
-        error.code == 'FWFEvaluateJavaScriptError') {
-      LogLevel.error('reCAPTCHA WebView JS error (ensure openmic.ai/recaptcha.html is deployed)', error);
-      return true;
-    }
     LogLevel.error('Platform Error', error);
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+  debugPrint('[initializeApp] 4. Crashlytics configured');
   LogLevel.info('Crashlytics configured');
 
+  debugPrint('[initializeApp] 5. Configuring Dependencies...');
   LogLevel.info('Configuring Dependencies...');
   await configureDependencies();
+  debugPrint('[initializeApp] 5. Dependencies configured');
   LogLevel.info('Dependencies configured');
 
+  debugPrint('[initializeApp] 6. Setting up reCAPTCHA site key');
   RecaptchaHandler.instance.setupSiteKey(dataSiteKey: kRecaptchaSiteKey);
+  debugPrint('[initializeApp] 6. reCAPTCHA configured');
   LogLevel.info('reCAPTCHA v3 site key configured for openmic.ai');
 
+  debugPrint('[initializeApp] 7. Initializing Notification Service...');
   LogLevel.info('Initializing Notification Service...');
   await getIt<NotificationService>().initialize();
+  debugPrint('[initializeApp] 7. Notification Service initialized');
   LogLevel.info('Notification Service initialized');
 
+  debugPrint('[initializeApp] 8. Requesting Notification Permission...');
   LogLevel.info('Requesting Notification Permission...');
   await getIt<NotificationService>().requestPermission();
+  debugPrint('[initializeApp] 8. Notification Permission done');
   LogLevel.info('Notification Permission done');
 
+  debugPrint('[initializeApp] 9. App initialization completed');
   LogLevel.info('App initialization completed');
 }
-

@@ -48,6 +48,7 @@ class _VerifyPhoneOtpPageState extends State<VerifyPhoneOtpPage> {
   Future<void> _sendOtp() async {
     try {
       final token = await getRecaptchaToken(
+        context: context,
         action: RecaptchaAction.sendOtp,
       );
       if (!mounted) return;
@@ -198,8 +199,8 @@ class _VerifyPhoneOtpPageState extends State<VerifyPhoneOtpPage> {
                       text: _isVerifying
                           ? 'Verifying...'
                           : _isLoggingIn
-                              ? 'Logging in...'
-                              : 'Verify OTP',
+                          ? 'Logging in...'
+                          : 'Verify OTP',
                       onPressed: (_isVerifying || _isLoggingIn)
                           ? null
                           : _verifyOtp,

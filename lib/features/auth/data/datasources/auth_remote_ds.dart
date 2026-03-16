@@ -241,7 +241,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'phoneNumber': phoneNumber,
       'idToken': idToken,
       'recaptchaToken': recaptchaToken,
-      if (inviteToken != null) 'inviteToken': inviteToken,
+      'inviteToken': (inviteToken),
     };
     final response = await apiClient.post<AccountModel>(
       ApiConstants.authV3CreateAccount,

@@ -1,8 +1,10 @@
-/// API constants for the application
-/// All API endpoints should be defined here
+import '../../Flavors/config/flavor_config.dart';
+
+/// API constants for the application.
+/// Base URL comes from [FlavorConfig] (dev/prod set at startup).
 class ApiConstants {
-  // Base URL - Replace with your actual API base URL
-  static const String baseUrl = 'https://openmic-staging-backend-744913677085.us-central1.run.app';
+  /// Current base URL from active flavor (dev or prod).
+  static String get baseUrl => FlavorConfig.instance.baseUrl;
 
   // Auth endpoints
   static const String login = '/auth/login';
@@ -16,12 +18,16 @@ class ApiConstants {
   // Auth API v3 (base path /api/v3/auth)
   static const String authV3 = '/api/v3/auth';
   static String get authV3CreateAccount => '$baseUrl$authV3/createAccount';
-  static String authV3SendOtp(int accountId) => '$baseUrl/$authV3/sendOtp/$accountId';
-  static String authV3VerifyOtp(int accountId) => '$baseUrl/$authV3/verifyOtp/$accountId';
-  static const String authV3Login = '$baseUrl/api/v3/auth/login';
-  static const String authV3PasswordReset = '$baseUrl/api/v3/auth/password-reset';
-  /// Lookup account by phone; returns { accountId } or 404. Adjust path if your backend differs.
-  static const String authV3LookupByPhone = '$baseUrl/api/v3/auth/lookupByPhone';
+  static String authV3SendOtp(int accountId) =>
+      '$baseUrl/$authV3/sendOtp/$accountId';
+  static String authV3VerifyOtp(int accountId) =>
+      '$baseUrl/$authV3/verifyOtp/$accountId';
+  static String get authV3Login => '$baseUrl/api/v3/auth/login';
+  static String get authV3PasswordReset =>
+      '$baseUrl/api/v3/auth/password-reset';
+  /// Lookup account by phone; returns { accountId } or 404.
+  static String get authV3LookupByPhone =>
+      '$baseUrl/api/v3/auth/lookupByPhone';
 
   // User endpoints
   static const String getUserProfile = '/user/profile';

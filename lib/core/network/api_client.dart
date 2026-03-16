@@ -21,9 +21,9 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-    Map<String, dynamic> json,
-    T Function(dynamic)? fromJsonT,
-  ) {
+      Map<String, dynamic> json,
+      T Function(dynamic)? fromJsonT,
+      ) {
     return ApiResponse<T>(
       success: json['success'] ?? true,
       message: json['message'],
@@ -47,11 +47,11 @@ class ApiClient {
 
   /// GET request
   Future<ApiResponse<T>> get<T>(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    T Function(dynamic)? fromJson,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        T Function(dynamic)? fromJson,
+      }) async {
     try {
       if (!await networkInfo.isConnected) {
         throw const NetworkException('No internet connection');
@@ -62,7 +62,7 @@ class ApiClient {
         queryParameters: queryParameters,
         options: options,
       );
-
+      _logRawResponse(response);
       return _handleResponse<T>(response, fromJson);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -74,12 +74,12 @@ class ApiClient {
 
   /// POST request
   Future<ApiResponse<T>> post<T>(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    T Function(dynamic)? fromJson,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        T Function(dynamic)? fromJson,
+      }) async {
     try {
       if (!await networkInfo.isConnected) {
         throw const NetworkException('No internet connection');
@@ -91,7 +91,7 @@ class ApiClient {
         queryParameters: queryParameters,
         options: options,
       );
-      debugPrint("response==> $response");
+      _logRawResponse(response);
       return _handleResponse<T>(response, fromJson);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -103,12 +103,12 @@ class ApiClient {
 
   /// PUT request
   Future<ApiResponse<T>> put<T>(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    T Function(dynamic)? fromJson,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        T Function(dynamic)? fromJson,
+      }) async {
     try {
       if (!await networkInfo.isConnected) {
         throw const NetworkException('No internet connection');
@@ -121,6 +121,7 @@ class ApiClient {
         options: options,
       );
 
+      _logRawResponse(response);
       return _handleResponse<T>(response, fromJson);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -132,12 +133,12 @@ class ApiClient {
 
   /// DELETE request
   Future<ApiResponse<T>> delete<T>(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    T Function(dynamic)? fromJson,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        T Function(dynamic)? fromJson,
+      }) async {
     try {
       if (!await networkInfo.isConnected) {
         throw const NetworkException('No internet connection');
@@ -150,6 +151,7 @@ class ApiClient {
         options: options,
       );
 
+      _logRawResponse(response);
       return _handleResponse<T>(response, fromJson);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -162,9 +164,9 @@ class ApiClient {
   /// Handle response. Supports both wrapped format { success, data, message }
   /// and raw API body (e.g. v3 auth returns object directly).
   ApiResponse<T> _handleResponse<T>(
-    Response response,
-    T Function(dynamic)? fromJson,
-  ) {
+      Response response,
+      T Function(dynamic)? fromJson,
+      ) {
     if (response.statusCode != null &&
         response.statusCode! >= 200 &&
         response.statusCode! < 300) {
@@ -202,6 +204,23 @@ class ApiClient {
 
   /// Handle Dio errors via [ResponseHandler].
   AppException _handleDioError(DioException error) {
+    _logRawDioError(error);
     return ResponseHandler.handleDioError(error);
+  }
+
+  void _logRawResponse(Response response) {
+    debugPrint(
+      'RAW API RESPONSE [${response.requestOptions.method}] ${response.requestOptions.path}',
+    );
+    debugPrint('Status: ${response.statusCode}');
+    debugPrint('Data: ${response.data}');
+  }
+
+  void _logRawDioError(DioException error) {
+    debugPrint(
+      'RAW API ERROR [${error.requestOptions.method}] ${error.requestOptions.path}',
+    );
+    debugPrint('Error status: ${error.response?.statusCode}');
+    debugPrint('Error data: ${error.response?.data}');
   }
 }

@@ -82,6 +82,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       _pendingFullPhone = _fullPhone;
       final cubit = context.read<AuthCubit>();
       final token = await getRecaptchaToken(
+        context: context,
         action: RecaptchaAction.accountCreate,
       );
       if (!mounted) return;
@@ -148,6 +149,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       _pendingFullPhone = _fullPhone;
       final cubit = context.read<AuthCubit>();
       final token = await getRecaptchaToken(
+        context: context,
         action: RecaptchaAction.accountCreate,
       );
       if (!mounted) return;
@@ -207,10 +209,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       final user = userCred.user;
       if (user == null) throw Exception('Failed to sign in');
       final displayName =
-          '${appleCred.givenName ?? ''} ${appleCred.familyName ?? ''}'
-              .trim();
+      '${appleCred.givenName ?? ''} ${appleCred.familyName ?? ''}'
+          .trim();
       final finalName =
-          displayName.isNotEmpty ? displayName : (name.isNotEmpty ? name : 'User');
+      displayName.isNotEmpty ? displayName : (name.isNotEmpty ? name : 'User');
       final email =
           user.email ?? appleCred.email ?? _emailController.text.trim();
       if (email.isEmpty) throw Exception('Email is required');
@@ -220,6 +222,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       _pendingFullPhone = _fullPhone;
       final cubit = context.read<AuthCubit>();
       final token = await getRecaptchaToken(
+        context: context,
         action: RecaptchaAction.accountCreate,
       );
       if (!mounted) return;
@@ -355,7 +358,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         return AppButton(
                           text: 'Sign up with email',
                           onPressed:
-                              state is AuthLoading ? null : _createWithEmail,
+                          state is AuthLoading ? null : _createWithEmail,
                           isLoading: state is AuthLoading,
                         );
                       },
