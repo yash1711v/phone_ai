@@ -87,6 +87,9 @@ dependencies:
   # Pin input for OTP
   pinput: ^3.0.1
 
+  # Audio playback for voice samples (onboarding / profile)
+  audioplayers: ^6.0.0
+
 
 dev_dependencies:
   flutter_test:

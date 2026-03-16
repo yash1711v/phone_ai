@@ -60,12 +60,29 @@ class App extends StatelessWidget {
             ],
             builder: (context, child) {
               return BlocListener<AuthCubit, AuthState>(
-                listener: (context, state) {
+                listener: (_, state) {
                   if (state is AuthAuthenticated) {
-                    context.goNamed('home');
+                    if (state.needsOnboarding) {
+                      AppRouter.router.goNamed('onboarding');
+                    } else {
+                      AppRouter.router.goNamed('home');
+                    }
+                  } else if (state is AuthInitial) {
+                    // After logout or no cached session: show login and remember state
+                    AppRouter.router.goNamed('login');
                   }
                 },
-                child: child ?? const SizedBox.shrink(),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification notification) {
+                    // Only dismiss keyboard on user-initiated scroll (drag), not on
+                    // layout-driven scroll (e.g. when keyboard opens and view adjusts).
+                    if (notification is UserScrollNotification) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    }
+                    return false;
+                  },
+                  child: child ?? const SizedBox.shrink(),
+                ),
               );
             },
           );

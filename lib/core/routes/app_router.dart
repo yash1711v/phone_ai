@@ -6,6 +6,7 @@ import '../../features/auth/presentation/pages/phone_otp_page.dart';
 import '../../features/auth/presentation/pages/create_account_page.dart';
 import '../../features/auth/presentation/pages/verify_phone_otp_page.dart';
 import '../../features/home/presentation/pages/home.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 
 /// App router configuration
 class AppRouter {
@@ -111,6 +112,24 @@ class AppRouter {
       // TODO: Add home route when home feature is implemented
       // lib/core/routes/app_router.dart
 
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final isSignupFlow = extra?['isSignupFlow'] as bool? ?? true;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: OnboardingPage(isSignupFlow: isSignupFlow),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
       GoRoute(
         path: '/home',
         name: 'home',

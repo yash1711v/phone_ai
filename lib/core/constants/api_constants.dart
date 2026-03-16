@@ -29,6 +29,15 @@ class ApiConstants {
   static String get authV3LookupByPhone =>
       '$baseUrl/api/v3/auth/lookupByPhone';
 
+  // Business API v3
+  static const String businessV3 = '/api/v3/business';
+  static String get businessSearch => '$baseUrl$businessV3/search';
+  static String get businessWebsite => '$baseUrl$businessV3/website';
+
+  // Bot API v3
+  static const String botV3 = '/api/v3/bot';
+  static String get botCreateQuickBot => '$baseUrl$botV3/create-quick-bot';
+
   // User endpoints
   static const String getUserProfile = '/user/profile';
   static const String updateUserProfile = '/user/profile';

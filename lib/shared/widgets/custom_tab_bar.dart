@@ -9,6 +9,8 @@ class CustomTabBar extends StatefulWidget {
   final Color? selectedColor;
   final Color? unselectedColor;
   final Color? backgroundColor;
+  /// Background color when tab is selected. If null, uses [Colors.white].
+  final Color? selectedBackgroundColor;
 
   const CustomTabBar({
     super.key,
@@ -18,6 +20,7 @@ class CustomTabBar extends StatefulWidget {
     this.selectedColor,
     this.unselectedColor,
     this.backgroundColor,
+    this.selectedBackgroundColor,
   });
 
   @override
@@ -59,6 +62,8 @@ class _CustomTabBarState extends State<CustomTabBar>
     final selectedColor = widget.selectedColor ?? Colors.black;
     final unselectedColor = widget.unselectedColor ?? Colors.grey.shade300;
     final backgroundColor = widget.backgroundColor ?? Colors.grey.shade200;
+    final selectedBg =
+        widget.selectedBackgroundColor ?? Colors.white;
 
     return Container(
       padding: const EdgeInsets.all(4),
@@ -83,7 +88,7 @@ class _CustomTabBarState extends State<CustomTabBar>
                 curve: Curves.easeInOut,
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: _selectedIndex == index ? Colors.white : Colors.transparent,
+                  color: _selectedIndex == index ? selectedBg : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: _selectedIndex == index
                       ? [

@@ -525,6 +525,7 @@
 				APP_NAME = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLIENT_ID = "744913677085-20ehabn7gk5vt680trn9ie1cbueb29lu.apps.googleusercontent.com";
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = MBFUCSN65G;
@@ -717,6 +718,7 @@
 				APP_NAME = "openmic (dev)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLIENT_ID = "540801659623-nuome5rbr5550lb9ebegescrnjfq5tne.apps.googleusercontent.com";
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = MBFUCSN65G;
@@ -749,6 +751,7 @@
 				APP_NAME = "openmic (dev)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLIENT_ID = "540801659623-nuome5rbr5550lb9ebegescrnjfq5tne.apps.googleusercontent.com";
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = MBFUCSN65G;
@@ -837,6 +840,7 @@
 				APP_NAME = openmic;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLIENT_ID = "744913677085-20ehabn7gk5vt680trn9ie1cbueb29lu.apps.googleusercontent.com";
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = MBFUCSN65G;
@@ -941,6 +945,7 @@
 				APP_NAME = openmic;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLIENT_ID = "744913677085-20ehabn7gk5vt680trn9ie1cbueb29lu.apps.googleusercontent.com";
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = MBFUCSN65G;

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/failures.dart';
@@ -82,11 +83,16 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// Login with Firebase idToken. Persists account and emits [AuthAuthenticated], or [AuthPhoneNotVerified], or [AuthError].
-  Future<void> loginWithIdToken(String idToken) async {
+  /// [needsOnboarding] when true (e.g. after new user OTP verify) redirects to onboarding instead of home.
+  Future<void> loginWithIdToken(String idToken, {bool needsOnboarding = false}) async {
+    debugPrint('[AuthCubit] loginWithIdToken: started');
     emit(const AuthLoading());
+    debugPrint('[AuthCubit] loginWithIdToken: calling _repository.loginV3');
     final result = await _repository.loginV3(idToken);
+    debugPrint('[AuthCubit] loginWithIdToken: loginV3 returned, folding result');
     await result.fold(
       (failure) async {
+        debugPrint('[AuthCubit] loginWithIdToken: failure ${failure.message}');
         if (failure is PhoneNotVerifiedFailure) {
           emit(AuthPhoneNotVerified(failure.accountId));
         } else {
@@ -94,10 +100,13 @@ class AuthCubit extends Cubit<AuthState> {
         }
       },
       (account) async {
+        debugPrint('[AuthCubit] loginWithIdToken: success, caching account');
         await _repository.cacheLoggedInAccount(account);
-        emit(AuthAuthenticated(account));
+        debugPrint('[AuthCubit] loginWithIdToken: emitting AuthAuthenticated');
+        emit(AuthAuthenticated(account, needsOnboarding: needsOnboarding));
       },
     );
+    debugPrint('[AuthCubit] loginWithIdToken: done');
   }
 
   /// Create account (v3). Call after Firebase sign-up. Emits success with no payload; UI should then send OTP, verify, then redirect to login.

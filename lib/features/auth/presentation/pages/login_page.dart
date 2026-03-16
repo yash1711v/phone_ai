@@ -63,21 +63,41 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithGoogle() async {
+    debugPrint('[LoginPage] _loginWithGoogle: started');
     try {
+      debugPrint('[LoginPage] _loginWithGoogle: getting FirebaseAuth and GoogleSignIn');
       final auth = getIt<FirebaseAuth>();
       final googleSignIn = getIt<GoogleSignIn>();
+      debugPrint('[LoginPage] _loginWithGoogle: calling googleSignIn.signIn()...');
       final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return;
+      debugPrint('[LoginPage] _loginWithGoogle: signIn() returned, googleUser==null: ${googleUser == null}');
+      if (googleUser == null) {
+        debugPrint('[LoginPage] _loginWithGoogle: user cancelled or null, returning');
+        return;
+      }
+      debugPrint('[LoginPage] _loginWithGoogle: getting googleUser.authentication...');
       final googleAuth = await googleUser.authentication;
+      debugPrint('[LoginPage] _loginWithGoogle: authentication received, building credential');
       final cred = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
       );
+      debugPrint('[LoginPage] _loginWithGoogle: signing in to Firebase with credential...');
       final userCred = await auth.signInWithCredential(cred);
+      debugPrint('[LoginPage] _loginWithGoogle: Firebase signIn done, user=${userCred.user?.uid}');
+      debugPrint('[LoginPage] _loginWithGoogle: getting idToken...');
       final idToken = await userCred.user?.getIdToken();
-      if (idToken == null || !mounted) return;
+      debugPrint('[LoginPage] _loginWithGoogle: idToken received: ${idToken != null}');
+      if (idToken == null || !mounted) {
+        debugPrint('[LoginPage] _loginWithGoogle: no idToken or not mounted, returning');
+        return;
+      }
+      debugPrint('[LoginPage] _loginWithGoogle: calling AuthCubit.loginWithIdToken');
       context.read<AuthCubit>().loginWithIdToken(idToken);
-    } catch (e) {
+      debugPrint('[LoginPage] _loginWithGoogle: loginWithIdToken called, done');
+    } catch (e, st) {
+      debugPrint('[LoginPage] _loginWithGoogle: ERROR $e');
+      debugPrint('[LoginPage] _loginWithGoogle: stackTrace $st');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

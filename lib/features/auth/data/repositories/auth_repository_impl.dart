@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
@@ -91,16 +92,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, AccountModel>> loginV3(String idToken) async {
+    debugPrint('[AuthRepositoryImpl] loginV3: started');
     try {
+      debugPrint('[AuthRepositoryImpl] loginV3: calling remoteDataSource.loginV3');
       final account = await remoteDataSource.loginV3(idToken);
+      debugPrint('[AuthRepositoryImpl] loginV3: success, account.id=${account.id}');
       return Right(account);
     } on PhoneNotVerifiedException catch (e) {
+      debugPrint('[AuthRepositoryImpl] loginV3: PhoneNotVerifiedException ${e.accountId}');
       return Left(PhoneNotVerifiedFailure(e.message, accountId: e.accountId));
     } on ServerException catch (e) {
+      debugPrint('[AuthRepositoryImpl] loginV3: ServerException ${e.message}');
       return Left(ServerFailure(e.message, code: e.code));
     } on AuthException catch (e) {
+      debugPrint('[AuthRepositoryImpl] loginV3: AuthException ${e.message}');
       return Left(AuthFailure(e.message, code: e.code));
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('[AuthRepositoryImpl] loginV3: catch $e');
+      debugPrint('[AuthRepositoryImpl] loginV3: stackTrace $st');
       return Left(ServerFailure(e.toString()));
     }
   }

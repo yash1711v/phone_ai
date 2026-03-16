@@ -30,6 +30,11 @@ import '../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/auth/presentation/cubit/auth_cubit.dart';
 
+import '../features/onboarding/data/datasources/onboarding_remote_datasource.dart';
+import '../features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../features/onboarding/domain/repositories/onboarding_repository.dart';
+import '../features/onboarding/presentation/cubit/onboarding_cubit.dart';
+
 final getIt = GetIt.instance;
 
 /// Initialize dependency injection
@@ -178,5 +183,18 @@ Future<void> configureDependencies() async {
   // Auth cubit (v3 flow: phone → OTP → login)
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(getIt<AuthRepository>()),
+  );
+
+  // Onboarding
+  getIt.registerLazySingleton<OnboardingRemoteDataSource>(
+    () => OnboardingRemoteDataSourceImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(getIt()),
+  );
+
+  getIt.registerFactory<OnboardingCubit>(
+    () => OnboardingCubit(getIt()),
   );
 }

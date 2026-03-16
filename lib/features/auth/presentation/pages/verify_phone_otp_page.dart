@@ -114,10 +114,17 @@ class _VerifyPhoneOtpPageState extends State<VerifyPhoneOtpPage> {
               _isVerifying = false;
               _isLoggingIn = true;
             });
-            context.read<AuthCubit>().loginWithIdToken(widget.idToken);
+            context.read<AuthCubit>().loginWithIdToken(
+              widget.idToken,
+              needsOnboarding: true,
+            );
           }
           if (state is AuthAuthenticated) {
-            context.goNamed('home');
+            if (state.needsOnboarding) {
+              context.goNamed('onboarding');
+            } else {
+              context.goNamed('home');
+            }
           }
         },
         builder: (context, state) {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../../core/constants/api_constants.dart';
@@ -257,13 +258,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AccountModel> loginV3(String idToken) async {
+    debugPrint('[AuthRemoteDataSource] loginV3: sending POST to ${ApiConstants.authV3Login}');
     final response = await apiClient.post<AccountModel>(
       ApiConstants.authV3Login,
       data: {'idToken': idToken},
       fromJson: (d) => AccountModel.fromJson(d as Map<String, dynamic>),
     );
+    debugPrint('[AuthRemoteDataSource] loginV3: response received, success=${response.success}');
     final data = response.data;
-    if (data == null) throw const ServerException('Invalid login response');
+    if (data == null) {
+      debugPrint('[AuthRemoteDataSource] loginV3: data is null, throwing');
+      throw const ServerException('Invalid login response');
+    }
+    debugPrint('[AuthRemoteDataSource] loginV3: returning account id=${data.id}');
     return data;
   }
 

@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:phone_ai/core/theme/theme_cubit.dart';
 
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../../core/theme/theme_cubit.dart';
 
 /// Settings page with logout functionality
 class SettingsPage extends StatelessWidget {
@@ -25,16 +23,11 @@ class SettingsPage extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              // Trigger logout event
-              FirebaseAuth.instance.signOut();
-              // Navigate to login
-              // Use the GoRouter extension method
-              context.go('/login');
-
-             // OR if you want to use the route name defined in AppRouter
-
+              // Sign out via AuthCubit: clears cache, signs out from Firebase (and Google), emits AuthInitial
+              await context.read<AuthCubit>().signOut();
+              // App listener will navigate to login when state becomes AuthInitial
             },
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,

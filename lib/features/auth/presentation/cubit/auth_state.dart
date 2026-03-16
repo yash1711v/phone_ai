@@ -54,14 +54,16 @@ class AuthOtpVerified extends AuthState {
   List<Object?> get props => [accountId];
 }
 
-/// Logged in with v3 account (persist and redirect to home)
+/// Logged in with v3 account (persist and redirect to home or onboarding)
 class AuthAuthenticated extends AuthState {
   final AccountModel account;
+  /// When true, user just completed signup and should see onboarding before home.
+  final bool needsOnboarding;
 
-  const AuthAuthenticated(this.account);
+  const AuthAuthenticated(this.account, {this.needsOnboarding = false});
 
   @override
-  List<Object?> get props => [account];
+  List<Object?> get props => [account, needsOnboarding];
 }
 
 /// Login returned 403 PHONE_NOT_VERIFIED; resume OTP flow with [accountId]
